@@ -20,50 +20,37 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <sys/types.h>
+#include <Process.h>
+#include <ProcessManager.h>
 #include <sys/wait.h>
 #include "Wait.h"
+
 
 Wait::Wait(int argc, char **argv)
     : POSIXApplication(argc, argv)
 {
-    parser().setDescription("It should be able to wait for a background process.");
-    parser().registerPositional("PID", "It should be able to wait for the number of background process.");
+    parser().setDescription("Wait for a background process to finish and return ");
+    parser().registerPositional("PID", "the id of this background process");
 }
 
-Wait::~Wait()
-{
+
+Wait::~Wait() {
 }
 
-Wait::Result Wait::exec()
-{
-    pid_t pid = 0;
-    char command[150];
-    char buf[300];
+Wait::Result Wait::exec() {
+    ProcessID pid;
+    int status;
+    int result;
 
-    // Convert input to seconds
-    if ((pid = atoi(arguments().get("PID"))) <= 0)
-    {
-        ERROR("invalid pid `" << arguments().get("PID") << "'");
-        return InvalidArgument;
+    if ((pid = atoi(arguments().get("PID"))) <= 0) {
+	ERROR("Invalid PID `" << arguments().get("PID") << "'");
+	return InvalidArgument;
     }
 
-    snprintf(command, sizeof(command), "ps");
-    FILE* fp=NULL;
-    // Wait now
-    while(1){
-    	int ch=0;
-    	fp=popen(command, "r");
-    	while((fgets(buf, sizeof(buf), fp))!=NULL){
-    	    int i=0;
-    	    int id=0;
-    	    while(i<strlen(buf)&&buf[i]==' ') i++;
-    	    for(i;i<strlen(buf)&&buf[i]!=' ';i++) id=id*10+(buf[i]-'0');
-    	    if(id==pid) ch=1;
-    	}
-    	if(ch==0) return Success;
+    result = waitpid(pid,&status,0);
+    if (result==0) {
+	ERROR("Could not wait for " << arguments().get("PID") << "'");
+	return TimedOut;
     }
-    
-    // Done
     return Success;
 }
