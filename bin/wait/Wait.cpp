@@ -48,20 +48,22 @@ Wait::Result Wait::exec()
         return InvalidArgument;
     }
 
-    snprintf(command, sizeof(command), "ps %d", pid);
+    snprintf(command, sizeof(command), "ps");
     FILE* fp=NULL;
     // Wait now
     while(1){
-    	
+    	int ch=0;
     	fp=popen(command, "r");
-    	if((fgets(buf, sizeof(buf), fp))==NULL){
-    	    ERROR("failed to wait: " << strerror(errno));
-            return IOError;
+    	while((fgets(buf, sizeof(buf), fp))!=NULL){
+    	    int i=0;
+    	    int id=0;
+    	    while(i<strlen(buf)&&buf[i]==' ') i++;
+    	    for(i;i<strlen(buf)&&buf[i]!=' ';i++) id=id*10+(buf[i]-'0);
+    	    if(id==pid) ch=1;
     	}
-   	if((fgets(buf, sizeof(buf), fp)) == NULL) break;
+    	if(ch==0) return Success;
     }
     
-
     // Done
     return Success;
 }
