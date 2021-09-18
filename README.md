@@ -1,7 +1,7 @@
 # FreeNOS-1.0.3
 
-1.Zicong Liu
+1. Full Names: Zicong Liu
 
-2.https://github.com/liuzicong98/FreeNOS-1.0.3/tree/wait
+2. Link to Github: https://github.com/liuzicong98/FreeNOS-1.0.3/tree/wait
 
-3.evcupture
+3. Link to screencast: evcupture
