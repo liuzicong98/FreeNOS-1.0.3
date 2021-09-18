@@ -38,7 +38,8 @@ Wait::~Wait()
 Wait::Result Wait::exec()
 {
     pid_t pid = 0;
-    int status;
+    char command[150];
+    char buf[300];
 
     // Convert input to seconds
     if ((pid = atoi(arguments().get("PID"))) <= 0)
@@ -47,12 +48,19 @@ Wait::Result Wait::exec()
         return InvalidArgument;
     }
 
+    snprintf(command, sizeof(command), "ps %d", pid);
+    FILE* fp=NULL;
     // Wait now
-    if (waitpid(pid,&status,0) != 0)
-    {
-        ERROR("failed to wait: " << strerror(errno));
-        return IOError;
+    while(1){
+    	
+    	fp=popen(command, "r");
+    	if((fgets(buf, sizeof(buf), fp))==NULL){
+    	    ERROR("failed to wait: " << strerror(errno));
+            return IOError;
+    	}
+   	if((fgets(buf, sizeof(buf), fp)) == NULL) break;
     }
+    
 
     // Done
     return Success;
