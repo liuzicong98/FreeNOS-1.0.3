@@ -58,7 +58,7 @@ Wait::Result Wait::exec()
     	    int i=0;
     	    int id=0;
     	    while(i<strlen(buf)&&buf[i]==' ') i++;
-    	    for(i;i<strlen(buf)&&buf[i]!=' ';i++) id=id*10+(buf[i]-'0);
+    	    for(i;i<strlen(buf)&&buf[i]!=' ';i++) id=id*10+(buf[i]-'0');
     	    if(id==pid) ch=1;
     	}
     	if(ch==0) return Success;
